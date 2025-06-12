@@ -31,17 +31,15 @@ def wins_lost_pipeline(season: int = 2025) -> pd.DataFrame:
            .fillna({"games_missed": 0})
            .assign(
                games_missed_team=lambda d: d.games_missed * d.mp_share,
-               wins_lost=lambda d: d.ws48 * d.mpg * d.games_missed_team / 48
+               wins_lost=lambda d: (d.war_per_minute * d.mpg * d.games_missed_team)
            )
     )
-
-    cur_df = df[df['team'] == 'LAL']
-    print(cur_df.to_string())
 
     # --- 3) aggregate ------------------------------------------------------
     team_losses = (df.groupby("team", as_index=False)["wins_lost"]
                      .sum()
                      .sort_values("wins_lost", ascending=False)
+                     .round(2)
                      .reset_index(drop=True))
 
     return team_losses

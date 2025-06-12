@@ -24,7 +24,6 @@ from bs4 import BeautifulSoup
 def scrape_spotrac_injuries(year: int = 2025,
                             view: str = "player") -> pd.DataFrame:
     url = f"https://www.spotrac.com/nba/injured/_/year/{year}/view/{view}"
-    print("url:", url)
     headers = {
         # A UA string helps avoid 403s
         "User-Agent": (

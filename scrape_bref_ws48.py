@@ -9,6 +9,9 @@ Pulls the Advanced box from Basketball-Reference for a given season
 The table lives at:
     https://www.basketball-reference.com/leagues/NBA_{YEAR}_advanced.html
 and is sometimes wrapped in an HTML comment, so we unwrap comments first.
+
+To generate a .csv file run the following command in your terminal:
+    python3 scrape_bref_ws48.py > player_stats_2024-2025.csv
 """
 
 import re
@@ -83,6 +86,10 @@ def scrape_bref_ws48(year: int = 2025) -> pd.DataFrame:
         mp     = int(tr.find("td", {"data-stat": "mp"}).get_text(strip=True))
         ws48_raw = tr.find("td", {"data-stat": "ws_per_48"}).get_text(strip=True)
         ws48 = float(ws48_raw) if ws48_raw != "" else 0.0
+        vorp_raw = tr.find("td", {"data-stat": "vorp"}).get_text(strip=True)
+        vorp = float(vorp_raw) if vorp_raw != "" else 0.0
+        war = vorp * 2.7
+        war_per_minute = war / mp
 
         records.append(
             {
@@ -91,6 +98,9 @@ def scrape_bref_ws48(year: int = 2025) -> pd.DataFrame:
                 "games": games,
                 "mp": mp,
                 "ws48": ws48,
+                "vorp": vorp,
+                "war": war,
+                "war_per_minute": war_per_minute
             }
         )
 
