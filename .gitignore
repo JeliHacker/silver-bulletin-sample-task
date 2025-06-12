@@ -1,0 +1,68 @@
+# ------------------------
+# macOS system files
+# ------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ------------------------
+# Python bytecode / cache
+# ------------------------
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+
+# pip wheels & eggs
+*.egg
+*.egg-info/
+dist/
+build/
+develop-eggs/
+.eggs/
+pip-wheel-metadata/
+
+# virtual environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+.ipynb_checkpoints/
+
+# ------------------------
+# IDE / editor settings
+# ------------------------
+# PyCharm & other JetBrains IDEs
+.idea/
+*.iml
+
+# VS Code (if you ever open it there)
+.vscode/
+
+# ------------------------
+# Testing / coverage / lint
+# ------------------------
+# pytest
+.pytest_cache/
+
+# coverage.py
+.coverage
+.coverage.*
+htmlcov/
+
+# mypy
+.mypy_cache/
+
+# pylint, bandit, etc.
+.pylint.d/*
+.bandit
+
+# ------------------------
+# Logs & runtime files
