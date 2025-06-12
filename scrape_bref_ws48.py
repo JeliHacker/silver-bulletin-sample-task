@@ -16,6 +16,7 @@ import sys
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup, Comment
+import unicodedata
 
 
 BREF_URL = "https://www.basketball-reference.com/leagues/NBA_{yr}_advanced.html"
@@ -24,6 +25,13 @@ UA_STR = (
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/123.0.0.0 Safari/537.36"
 )
+
+
+def _ascii(name: str) -> str:
+    """Strip accents & keep plain ASCII for join keys."""
+    return unicodedata.normalize("NFKD", name) \
+                      .encode("ascii", "ignore") \
+                      .decode("ascii")
 
 
 def _extract_table(soup: BeautifulSoup):
@@ -49,11 +57,12 @@ def scrape_bref_ws48(year: int = 2025) -> pd.DataFrame:
     url = BREF_URL.format(yr=year)
     resp = requests.get(url, headers={"User-Agent": UA_STR}, timeout=20)
     resp.raise_for_status()
+    resp.encoding = "utf-8"
 
     soup = BeautifulSoup(resp.text, "html.parser")
     table = _extract_table(soup)
 
-    records = {}
+    records = []
     for tr in table.tbody.find_all("tr"):
         if tr.get("class") == ["thead"]:
             continue                                  # skip header splits
@@ -65,26 +74,27 @@ def scrape_bref_ws48(year: int = 2025) -> pd.DataFrame:
         if not player_cell:                           # separator rows
             continue
 
-        player = player_cell.get_text(strip=True)
+        raw_name = player_cell.get_text(strip=True)
+        player = _ascii(raw_name)
         team   = tr.find("td", {"data-stat": "team_name_abbr"}).get_text(strip=True)
+        if team in ["TOT", "2TM", "3TM"]:
+            continue
         games  = int(tr.find("td", {"data-stat": "games"}).get_text(strip=True))
         mp     = int(tr.find("td", {"data-stat": "mp"}).get_text(strip=True))
         ws48_raw = tr.find("td", {"data-stat": "ws_per_48"}).get_text(strip=True)
         ws48 = float(ws48_raw) if ws48_raw != "" else 0.0
 
-        # If player appears multiple times (trades), keep the TOTAL ("TOT")
-        # row; otherwise keep the stint with the most minutes.
-        rec = records.get(player)
-        if (rec is None or team == "TOT" or rec["team"] != "TOT" and mp > rec["mp"]):
-            records[player] = {
+        records.append(
+            {
                 "player": player,
                 "team": team,
                 "games": games,
                 "mp": mp,
                 "ws48": ws48,
             }
+        )
 
-    df = pd.DataFrame.from_records(list(records.values()))
+    df = pd.DataFrame.from_records(records)
     df["mpg"] = df["mp"] / df["games"].replace(0, pd.NA)
 
     return df
