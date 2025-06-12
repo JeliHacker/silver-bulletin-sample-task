@@ -11,7 +11,7 @@ Quick-n-dirty Spotrac NBA injury tracker scraper.
 
 Run it from the CLI:
 
-    python scrape_spotrac_injuries.py > injuries_2025.csv
+    python scrape_spotrac_injuries.py 2024 > injuries_2024-2025.csv
 """
 
 import re

@@ -11,7 +11,7 @@ The table lives at:
 and is sometimes wrapped in an HTML comment, so we unwrap comments first.
 
 To generate a .csv file run the following command in your terminal:
-    python3 scrape_bref_ws48.py > player_stats_2024-2025.csv
+    python3 scrape_bref_ws48.py 2025 > player_stats_2024-2025.csv
 """
 
 import re

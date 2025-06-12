@@ -35,6 +35,13 @@ def wins_lost_pipeline(season: int = 2025) -> pd.DataFrame:
            )
     )
 
+    okc_sorted = (
+        df[df["team"] == "OKC"]
+        .sort_values(by="wins_lost", ascending=False)
+    )
+    print("results for OKC below")
+    print(okc_sorted.to_string())
+
     # --- 3) aggregate ------------------------------------------------------
     team_losses = (df.groupby("team", as_index=False)["wins_lost"]
                      .sum()
